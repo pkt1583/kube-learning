@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: myjob
+spec:
+  ttlSecondsAfterFinished: 100
+  activeDeadlineSeconds: 5
+  #completions: 3
+  #parallelism: 3
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: busybox
+        args:
+            - /bin/sh
+            - -c
+            - date; echo sleeping....; sleep 90s; echo exiting...; date
+      restartPolicy: Never

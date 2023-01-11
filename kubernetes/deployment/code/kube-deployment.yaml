@@ -1,0 +1,105 @@
+#create configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mydeployment-config
+data:
+  MESSAGE: "Hello from the environment"
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+stringData:
+    PASSWORD: "<Password>"
+    USER_ID: "<USER_ID>"
+---
+
+#Create kubernetes deployment for mydeployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeployment
+  labels:
+    app: mydeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mydeployment
+  template:
+    metadata:
+      labels:
+        app: mydeployment
+    spec:
+      containers:
+      - name: mydeployment
+        image: myrgmyacr.azurecr.io/mydeployment:latest
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        envFrom:
+        - configMapRef:
+            name: mydeployment-config
+        - secretRef:
+            name: mysecret
+        ports:
+        - containerPort: 8081
+        resources:
+          requests:
+            cpu: 100m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 32Mi
+      #nodeSelector:
+        #agentpool: userpool
+
+---
+#create service for mydeployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydeployment
+  labels:
+    app: mydeployment
+spec:
+  ports:
+  - port: 80
+    targetPort: 8081
+    protocol: TCP
+  selector:
+    app: mydeployment
+
+---
+#create ingress for mydeployment
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mydeployment
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service
+        pathType: Prefix
+        backend:
+          service:
+            name: mydeployment
+            port:
+              number: 80

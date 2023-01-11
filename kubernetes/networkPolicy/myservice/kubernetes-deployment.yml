@@ -1,0 +1,99 @@
+#namespace for netpol-servicea
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netpol-demo
+---
+#kubernetes deployment for netpol-servicea
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netpol-servicea
+  namespace: netpol-demo
+  labels:
+    app: netpol-servicea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netpol-servicea
+  template:
+    metadata:
+      labels:
+        app: netpol-servicea
+    spec:
+      containers:
+        - name: netpol-servicea
+          image: myrgmyacr.azurecr.io/netpol-servicea:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          #populate env from configmap
+          envFrom:
+              - configMapRef:
+                  name: netpol-servicea-config
+---
+#configmap for netpol-servicea
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netpol-servicea-config
+  namespace: netpol-demo
+data:
+  DOWNSTREAM_URL: "http://netpol-serviceb/message"
+
+---
+# Path: kubernetes-service.yml
+#kubernetes service for netpol-servicea
+apiVersion: v1
+kind: Service
+metadata:
+  name: netpol-servicea
+  namespace: netpol-demo
+  labels:
+    app: netpol-servicea
+spec:
+  ports:
+    - port: 80
+      targetPort: 8081
+      name: http
+  selector:
+    app: netpol-servicea
+
+---
+#ingress resource for netpol-servicea
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: netpol-servicea
+  namespace: netpol-demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /servicea
+            pathType: Prefix
+            backend:
+              service:
+                name: netpol-servicea
+                port:
+                  number: 80
+
+
+

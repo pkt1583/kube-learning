@@ -1,0 +1,17 @@
+#networkpolicy to enable connectivity from nginx-ingress to netpol-servicea
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nginx-ingress-to-netpol-servicea
+  namespace: netpol-demo
+spec:
+  podSelector:
+    matchLabels:
+      app: netpol-servicea
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+  policyTypes:
+  - Ingress

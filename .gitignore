@@ -1,0 +1,5 @@
+.DS_Store
+kubernetes/networkPolicy/myservice/bin/goapp.exe
+kubernetes/networkPolicy/anotherservice/bin/goapp.exe
+kubernetes/deployment/code/bin/goapp
+**/bin

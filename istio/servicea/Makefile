@@ -30,13 +30,16 @@ clean:
 
 #build docker image
 docker:
-	docker build --platform=linux/amd64 -t myrgmyacr.azurecr.io/netpol-servicea .
+	docker build --platform=linux/amd64 -t myacrmyrg.azurecr.io/servicea .
 
 #push docker image
 push:
-	docker push myrgmyacr.azurecr.io/netpol-servicea
+	docker push myacrmyrg.azurecr.io/servicea
 
 delete-pod:
-	kubectl delete pod -l=app=netpol-servicea -n netpol-demo
+	kubectl delete pod -l=app=servicea -n demo
 
-all: deps build docker push delete-pod
+acr-build:
+	az acr build --registry myrgmyacr --image servicea .
+
+all: deps build acr-build delete-pod

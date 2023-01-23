@@ -5,7 +5,7 @@ metadata:
   labels:
     app: serviceb
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       name: serviceb
@@ -16,6 +16,18 @@ spec:
         - name: serviceb
           image: myrgmyacr.azurecr.io/serviceb
           imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            limits:
+              cpu: 100m
+              memory: 32Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
       restartPolicy: Always
   selector:
     matchLabels:

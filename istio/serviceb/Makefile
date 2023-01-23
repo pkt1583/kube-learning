@@ -5,6 +5,7 @@ BINARY=bin/goapp
 VERSION=1.0.0
 BUILD=`date +%FT%T%z`
 
+REGISTRY=myrgmyacr
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 GOOS=linux
@@ -30,13 +31,15 @@ clean:
 
 #build docker image
 docker:
-	docker build --platform=linux/amd64 -t myrgmyacr.azurecr.io/netpol-servicea .
+	docker build --platform=linux/amd64 -t ${REGISTRY}.azurecr.io/serviceb .
 
 #push docker image
 push:
-	docker push myrgmyacr.azurecr.io/netpol-servicea
+	docker push myacrmyrg.azurecr.io/serviceb
 
 delete-pod:
-	kubectl delete pod -l=app=netpol-servicea -n netpol-demo
+	kubectl delete pod -l=app=serviceb -n demo
+acr-build:
+	az acr build --registry ${REGISTRY} --image serviceb .
 
-all: deps build docker push delete-pod
+all: deps build acr-build delete-pod

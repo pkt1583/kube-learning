@@ -30,7 +30,7 @@ clean:
 
 #build docker image
 docker:
-	docker build -t myrgmyacr.azurecr.io/netpol-serviceb .
+	docker build --platform=linux/amd64 -t myrgmyacr.azurecr.io/netpol-serviceb .
 
 #push docker image
 push:

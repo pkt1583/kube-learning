@@ -1,0 +1,16 @@
+---
+# Path: kubernetes-service.yml
+#kubernetes service for servicea
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicea
+  labels:
+    app: servicea
+spec:
+  ports:
+    - port: 80
+      targetPort: 8081
+      name: http
+  selector:
+    app: servicea

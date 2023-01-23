@@ -1,0 +1,11 @@
+# Istio authentication policy for serviceb
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: serviceb
+spec:
+  selector:
+    matchLabels:
+      app: serviceb
+  mtls:
+    mode: STRICT

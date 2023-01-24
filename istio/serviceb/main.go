@@ -5,9 +5,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/caarlos0/env"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 type config struct {
@@ -23,7 +25,7 @@ func main() {
 	}
 
 	router := mux.NewRouter()
-
+	
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK from " + e.PodName))

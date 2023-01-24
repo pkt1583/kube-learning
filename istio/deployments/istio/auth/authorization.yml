@@ -1,0 +1,72 @@
+#Istion Authorization Policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: default
+  #Optionally specify namespace
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: servicea
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            #SPIFFE ID in case of mTLS
+            principals: ["*"]
+      to:
+        - operation:
+            methods: ["GET"]
+            paths: ["/servicea"]
+      when:
+        - key: request.auth.claims[iss]
+          values: ["someissuer"]
+        - key: request.auth.claims[aud]
+          values: ["someaudience"]
+
+---
+#Deny all policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  #Optionally specify namespace
+  namespace: demo
+spec: {}
+
+---
+#Allow all
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-all
+  #Optionally specify namespace
+  namespace: demo
+spec:
+  rules:
+    - {}
+
+---
+#Allow traffic from namespace demo to namespace demo
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-traffic-from-demo-to-demo
+  #Optionally specify namespace
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: servicea
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["demo"]
+      to:
+        - operation:
+            methods: ["GET"]
+            paths: ["/servicea"]
+            
+

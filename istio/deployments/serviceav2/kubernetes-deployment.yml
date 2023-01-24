@@ -1,10 +1,11 @@
-#kubernetes deployment for servicea
+#kubernetes deployment for serviceav2
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: servicea
+  name: serviceav2
   labels:
     app: servicea
+    version: v2
 spec:
   replicas: 1
   selector:
@@ -14,9 +15,10 @@ spec:
     metadata:
       labels:
         app: servicea
+        version: v2
     spec:
       containers:
-        - name: servicea
+        - name: serviceav2
           image: myrgmyacr.azurecr.io/servicea
           imagePullPolicy: Always
           ports:
@@ -34,25 +36,31 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: GPTKEY
+              valueFrom:
+                configMapKeyRef:
+                  name: chatgpt-config
+                  key: key
           #populate env from configmap
           envFrom:
               - configMapRef:
-                  name: servicea-config
+                  name: serviceav2-config
           resources:
             requests:
               cpu: 100m
-              memory: 128Mi
+              memory: 24Mi
             limits:
               cpu: 100m
-              memory: 128Mi
+              memory: 24Mi
 ---
-#configmap for servicea
+#configmap for serviceav2
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: servicea-config
+  name: serviceav2-config
 data:
-  DOWNSTREAM_URL: "http://serviceb.serviceb.svc.cluster.local/message"
+  DOWNSTREAM_URL: "http://serviceav2/health"
+---
 
 
 

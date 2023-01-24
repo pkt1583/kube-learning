@@ -1,0 +1,19 @@
+#create kustomize script
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: demo
+resources:
+  - destination-rule.yml
+  - virtual-service.yml
+
+patchesJson6902:
+  - target:
+      group: networking.istio.io
+      version: v1alpha3
+      kind: VirtualService
+      name: servicea
+    patch: |-
+      - op: replace
+        path: /spec/hosts/0
+        value: myrg-istio.centralindia.cloudapp.azure.com    
+   

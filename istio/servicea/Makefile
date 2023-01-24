@@ -28,18 +28,7 @@ run: build
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
-#build docker image
-docker:
-	docker build --platform=linux/amd64 -t myacrmyrg.azurecr.io/servicea .
-
-#push docker image
-push:
-	docker push myacrmyrg.azurecr.io/servicea
-
-delete-pod:
-	kubectl delete pod -l=app=servicea -n demo
-
 acr-build:
-	az acr build --registry myrgmyacr --image servicea .
+	az acr build --registry myacrmyrg --image servicea .
 
-all: deps build acr-build delete-pod
+all: deps build acr-build

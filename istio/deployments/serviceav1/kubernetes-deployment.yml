@@ -1,12 +1,19 @@
-
-#kubernetes deployment for serviceav1
+#create namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+  #istio injection
+  labels:
+    istio-injection: enabled
+---
+#kubernetes deployment for servicea
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: serviceav1
+  name: servicea
   labels:
     app: servicea
-    version: v2
 spec:
   replicas: 1
   selector:
@@ -16,10 +23,9 @@ spec:
     metadata:
       labels:
         app: servicea
-        version: v2
     spec:
       containers:
-        - name: serviceav1
+        - name: servicea
           image: myrgmyacr.azurecr.io/servicea
           imagePullPolicy: Always
           ports:
@@ -40,7 +46,7 @@ spec:
           #populate env from configmap
           envFrom:
               - configMapRef:
-                  name: serviceav1-config
+                  name: servicea-config
           resources:
             requests:
               cpu: 100m
@@ -49,14 +55,13 @@ spec:
               cpu: 100m
               memory: 128Mi
 ---
-#configmap for serviceav1
+#configmap for servicea
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: serviceav1-config
+  name: servicea-config
 data:
-  DOWNSTREAM_URL: "http://serviceav1/health"
-
+  DOWNSTREAM_URL: "http://serviceb.serviceb.svc.cluster.local/message"
 
 
 

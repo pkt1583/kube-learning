@@ -1,0 +1,22 @@
+#Istio RequestAuthentication policy
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: default
+  #Optionally specify namespace
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: servicea
+
+  jwtRules:
+    - issuer: "someissuer"
+      jwksUri: "https://someissuer.com/.well-known/jwks.json"
+      audiences:
+        - "someaudience"
+      forwardOriginalToken: true
+      fromHeaders:
+        - name: "Authorization"
+          prefix: "Bearer "
+  

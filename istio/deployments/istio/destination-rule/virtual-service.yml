@@ -1,0 +1,21 @@
+#Istio virtual service
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: servicea
+spec:
+  hosts:
+    - "*"
+    - servicea.demo.svc.cluster.local
+  gateways:
+    - servicea
+  http:
+    - match:
+        - uri:
+            prefix: /servicea
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: servicea.demo.svc.cluster.local
+            subset: v1

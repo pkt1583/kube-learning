@@ -1,0 +1,20 @@
+#create kustomize script
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: demo
+resources:
+  - kubernetes-deployment.yml
+commonLabels:
+  version: v2
+
+#patch image in deployment
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: serviceav2
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: myacrmyrg.azurecr.io/servicea

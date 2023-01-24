@@ -1,0 +1,18 @@
+#Istio Peer authentication policy
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  #Optionally specify namespace
+  namespace: demo
+spec:
+#Optionally specify workload
+  selector:
+    matchLabels:
+      app: servicea
+  mtls:
+    mode: STRICT
+#Optionally specify port
+  portLevelMtls:
+    80:
+      mode: PERMISSIVE

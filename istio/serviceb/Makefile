@@ -5,7 +5,7 @@ BINARY=bin/goapp
 VERSION=1.0.0
 BUILD=`date +%FT%T%z`
 
-REGISTRY=myrgmyacr
+REGISTRY=myacrmyrg
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 GOOS=linux

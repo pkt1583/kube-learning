@@ -1,0 +1,10 @@
+#patch the hostname
+patchJson6902:
+ - target:
+     kind: VirtualService
+     name: servicea
+     namespace: demo
+   patch: |-
+     - op: replace
+       path: /spec/hosts/0
+       value: myrg-istio.centralindia.cloudapp.azure.com

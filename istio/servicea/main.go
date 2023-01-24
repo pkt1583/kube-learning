@@ -3,6 +3,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -31,7 +32,27 @@ func main() {
 		io.WriteString(w, "OK")
 
 	}).Methods("GET")
+	transCfg := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
+}
+	client := &http.Client{Transport: transCfg}
+	router.HandleFunc("/google", func(w http.ResponseWriter, r *http.Request) {
+		//make http get call
+		response, err := client.Get("https://www.google.com")
+		if err != nil {
+			fmt.Printf("the error is %s  \n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			io.WriteString(w, "error")
+		}
+		all, er := io.ReadAll(response.Body)
+		if er != nil {
+			fmt.Printf("the error in reading response %s  \n", err)
+		}
+		fmt.Printf("the response body %s  \n", all)
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, string(all))
 
+	})
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var result = make(map[string]interface{})
 		result["podName"] = e.PodName
